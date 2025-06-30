@@ -11,7 +11,7 @@ export class CreateOrderDto {
 
   @IsEnum(BoostAction)
   action: BoostAction;
-
+  tx_ref: string;
   @IsString()
   @IsUrl()
   @IsNotEmpty()
