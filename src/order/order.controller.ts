@@ -21,7 +21,6 @@ export class OrderController {
     return this.orderService.findOne(id);
   }
 
-  // Example extra route: get orders by userId
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string) {
     return this.orderService.findByUser(userId);

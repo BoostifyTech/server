@@ -12,7 +12,7 @@ export class OrderService {
 
   async findAll() {
     return this.prisma.order.findMany({
-      include: { user: true }, // Include user data if needed
+      include: { user: true },
     });
   }
 
