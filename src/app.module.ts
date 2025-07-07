@@ -4,10 +4,14 @@ import { ChapaModule } from 'chapa-nestjs';
 import { UserModule } from './user/user.module';
 import { OrderModule } from './order/order.module';
 import { PaymentModule } from './payment/payment.module';
+
 import { JapModule } from './jap/jap.module';
 @Module({
   imports: [
     JapModule,
+
+
+
     ConfigModule.forRoot({ isGlobal: true }),
     ChapaModule.registerAsync({
       imports: [ConfigModule],
