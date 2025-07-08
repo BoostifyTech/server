@@ -79,9 +79,8 @@ export class JapService {
             rate: parseFloat(service.rate),
             min: parseInt(service.min, 10),
             max: parseInt(service.max, 10),
-            dripfeed: service.dripfeed,
+
             refill: service.refill,
-            cancel: service.cancel,
           },
           create: {
             serviceId: Number(service.service),
@@ -91,9 +90,8 @@ export class JapService {
             rate: parseFloat(service.rate),
             min: parseInt(service.min, 10),
             max: parseInt(service.max, 10),
-            dripfeed: service.dripfeed,
+
             refill: service.refill,
-            cancel: service.cancel,
           },
         });
       }
@@ -135,16 +133,12 @@ export class JapService {
     return this.postToJAP({ action: 'refill_status', refill: refillId });
   }
 
-  async cancelOrders(orderIds: string) {
-    return this.postToJAP({ action: 'cancel', orders: orderIds });
-  }
-
   async findServicesByPlatform(platform?: string): Promise<JapServiceItem[]> {
     const where: Prisma.SmmServiceWhereInput = platform
       ? {
           category: {
             startsWith: platform.trim(),
-            mode: 'insensitive', // ✅ valid QueryMode
+            mode: 'insensitive',
           },
         }
       : {};
@@ -152,16 +146,16 @@ export class JapService {
     const items = await this.prisma.smmService.findMany({ where });
 
     return items.map((item) => ({
-      service: String(item.serviceId), // ✅ matches JapServiceItem
+      service: String(item.serviceId),
       name: item.name,
       type: item.type,
       category: item.category,
-      rate: item.rate.toString(), // ✅ string
-      min: item.min.toString(), // ✅ string
-      max: item.max.toString(), // ✅ string
-      dripfeed: item.dripfeed,
+      rate: item.rate.toString(),
+      min: item.min.toString(),
+      max: item.max.toString(),
+
       refill: item.refill,
-      cancel: item.cancel,
+
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));

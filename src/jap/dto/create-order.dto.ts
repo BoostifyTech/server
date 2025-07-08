@@ -2,12 +2,11 @@ import { IsNumber, IsString, Min } from 'class-validator';
 
 export class CreateOrderDto {
   @IsNumber()
-  service: number;
+  serviceId: number;
 
   @IsString()
-  link: string;
-
+  targetUrl: string;
   @IsNumber()
   @Min(1)
-  quantity: number;
+  amount: number;
 }

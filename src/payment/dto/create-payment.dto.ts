@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, IsEnum, IsInt } from 'class-validator';
-import { OrderStatus, BoostAction, Platform } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 
 export class CreatePaymentDto {
   @IsNotEmpty()
@@ -21,14 +21,6 @@ export class CreatePaymentDto {
   @IsNotEmpty()
   @IsString()
   userId: string;
-
-  @IsNotEmpty()
-  @IsEnum(Platform)
-  category: Platform;
-
-  @IsNotEmpty()
-  @IsEnum(BoostAction)
-  action: BoostAction;
 
   @IsNotEmpty()
   @IsString()

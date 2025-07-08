@@ -6,9 +6,9 @@ export type JapServiceItem = {
   rate: string;
   min: string;
   max: string;
-  dripfeed: boolean;
+
   refill: boolean;
-  cancel: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 };

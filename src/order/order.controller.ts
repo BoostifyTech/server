@@ -10,17 +10,18 @@ export class OrderController {
   create(@Body() dto: CreateOrderDto) {
     return this.orderService.create(dto);
   }
-
-  @Get()
-  findAll() {
-    return this.orderService.findAll();
-  }
-
+  //get the user by user id
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(id);
   }
 
+  @Get()
+  //i dont understand this route
+  findAll() {
+    return this.orderService.findAll();
+  }
+  //get all orders specific to the user
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string) {
     return this.orderService.findByUser(userId);

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { UserService } from './user.service';
-//import { CreateUserDto } from './dto/create-user.dto';
+
 interface TelegramUser {
   id: number;
   username?: string;
@@ -9,7 +9,7 @@ interface TelegramUser {
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  // get telegram users
   @Post()
   create(@Body() telegramUser: TelegramUser) {
     const dto = {
@@ -19,17 +19,17 @@ export class UserController {
     };
     return this.userService.create(dto);
   }
+  //to get all users its for admin
   @Get()
   findAll() {
     return this.userService.findAll();
   }
-
-  // 👇 Place this BEFORE @Get(':id') to avoid conflict
+  // to get the balance by id
   @Get(':id/balance')
   getBalance(@Param('id') id: string) {
     return this.userService.getBalance(id);
   }
-
+  //  to get the user by user id
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
