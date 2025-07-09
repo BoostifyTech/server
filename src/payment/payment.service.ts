@@ -31,8 +31,9 @@ export class PaymentService {
       currency: 'ETB',
       amount: data.amount,
       tx_ref,
-      return_url: `https://yourfrontend.com/success/${tx_ref}`,
+      return_url: `https://boosterclient.vercel.app/success/${tx_ref}`,
       callback_url: `https://yourbackend.com/api/payment/webhook`,
+
       customization: {
         title: 'MiniApp Payment',
         description: 'Pay for your order',
@@ -66,6 +67,19 @@ export class PaymentService {
         };
       }
 
+      // ✅ Check if order exists before updating
+      const existingOrder = await this.prisma.order.findUnique({
+        where: { tx_ref },
+      });
+
+      if (!existingOrder) {
+        return {
+          success: false,
+          message: 'Order not found for tx_ref: ' + tx_ref,
+        };
+      }
+
+      // ✅ Now update
       const updatedOrder = await this.prisma.order.update({
         where: { tx_ref },
         data: { status: OrderStatus.COMPLETED },
@@ -77,18 +91,76 @@ export class PaymentService {
         data: { id: updatedOrder.id },
       };
     } catch (error) {
-      if (error instanceof Error) {
-        return {
-          success: false,
-          message: 'Internal server error.',
-          error: error.message,
-        };
-      }
       return {
         success: false,
         message: 'Internal server error.',
-        error: String(error),
+        error: error instanceof Error ? error.message : String(error),
       };
     }
+  }
+
+  async handleWebhook(data: { tx_ref: string; status: string }) {
+    try {
+      const { tx_ref, status } = data;
+
+      if (!tx_ref) {
+        return { message: 'Missing tx_ref', success: false };
+      }
+
+      const order = await this.prisma.order.findUnique({ where: { tx_ref } });
+
+      if (!order) {
+        return { message: 'Order not found', success: false };
+      }
+
+      if (status === 'success') {
+        if (order.status === OrderStatus.COMPLETED) {
+          return { message: 'Order already processed', success: true };
+        }
+
+        await this.prisma.order.update({
+          where: { tx_ref },
+          data: { status: OrderStatus.COMPLETED },
+        });
+
+        return { message: 'Order marked as completed', success: true };
+      }
+
+      // Optional: mark as failed
+      await this.prisma.order.updateMany({
+        where: { tx_ref, status: { not: OrderStatus.COMPLETED } },
+        data: { status: OrderStatus.FAILED },
+      });
+
+      return {
+        message: 'Payment failed or was not successful',
+        success: false,
+      };
+    } catch (error) {
+      console.error('Webhook handler error:', error);
+      return {
+        message: 'Internal server error',
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+  // PaymentService.ts
+  async getTransactionHistory(userId: string) {
+    return this.prisma.payment.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        order: {
+          include: {
+            service: true, // includes SmmService
+          },
+        },
+      },
+    });
   }
 }
