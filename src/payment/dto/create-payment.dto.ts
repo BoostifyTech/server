@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsString, IsEnum, IsInt } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 import { OrderStatus } from '@prisma/client';
 
 export class CreatePaymentDto {
@@ -27,9 +34,18 @@ export class CreatePaymentDto {
   targetUrl: string;
 
   @IsNotEmpty()
-  @IsInt()
+  @IsNumber()
+  serviceId: number; // Added missing property
+
+  @IsNotEmpty()
+  @IsNumber()
+  totalPrice: number; // Added missing property
+
+  @IsNotEmpty()
+  @IsString() // or @IsNumber() depending on your use case
   amount: string;
 
   @IsEnum(OrderStatus)
+  @IsOptional()
   status?: OrderStatus;
 }

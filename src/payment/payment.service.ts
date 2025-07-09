@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ChapaService } from 'chapa-nestjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrderStatus } from '@prisma/client';
+import { OrderService } from '../order/order.service';
 
 @Injectable()
 export class PaymentService {
   constructor(
     private readonly chapaService: ChapaService,
     private readonly prisma: PrismaService,
+    private readonly orderService: OrderService,
   ) {}
 
   async initializePayment(data: {
@@ -15,21 +17,35 @@ export class PaymentService {
     lastName: string;
     email: string;
     amount: string;
+    userId: string;
+    serviceId: number;
+    targetUrl: string;
+    totalPrice: number;
   }) {
     const tx_ref = await this.chapaService.generateTransactionReference();
 
     const response = await this.chapaService.initialize({
       first_name: data.firstName,
-      last_name: data.lastName,
-      email: data.email,
+      last_name: 'abebe',
+      email: 'birhanudejen617@gmail.com',
       currency: 'ETB',
       amount: data.amount,
       tx_ref,
-      return_url: `https://boosterclient.vercel.app/success/${tx_ref}`,
+      return_url: `https://yourfrontend.com/success/${tx_ref}`,
+      callback_url: `https://yourbackend.com/api/payment/webhook`,
       customization: {
         title: 'MiniApp Payment',
         description: 'Pay for your order',
       },
+    });
+
+    await this.orderService.create({
+      userId: data.userId,
+      serviceId: data.serviceId,
+      targetUrl: data.targetUrl,
+      amount: Number(data.amount),
+      totalPrice: data.totalPrice,
+      tx_ref,
     });
 
     return {
@@ -71,7 +87,7 @@ export class PaymentService {
       return {
         success: false,
         message: 'Internal server error.',
-        error: String(error), // fallback
+        error: String(error),
       };
     }
   }
