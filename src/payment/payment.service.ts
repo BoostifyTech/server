@@ -31,8 +31,8 @@ export class PaymentService {
       currency: 'ETB',
       amount: data.amount,
       tx_ref,
-      return_url: `https://boosterclient.vercel.app/success/${tx_ref}`,
-      callback_url: `https://yourbackend.com/api/payment/webhook`,
+      return_url: `https://boosterclient.vercel.app/payment/success/${tx_ref}`,
+      callback_url: `https://server-gya2.onrender.com/api/payment/webhook`,
 
       customization: {
         title: 'MiniApp Payment',
